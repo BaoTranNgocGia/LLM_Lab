@@ -33,14 +33,14 @@ văn bản đầu vào cho một LLM kiểu GPT:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r Session1/requirements.txt
 ```
 
 **Windows (PowerShell):**
 ```
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r Session1/requirements.txt
 ```
 
 ## Cấu Trúc Thư Mục

@@ -76,7 +76,8 @@ def build_vocab(tokens: list) -> dict:
     Trả về: dict[str, int]
     """
     # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-    raise NotImplementedError("Phần 1.1 chưa được cài đặt")
+    unique_tokens = sorted(set(tokens))
+    return {token: i for i, token in enumerate(unique_tokens)}
 
 
 class SimpleTokenizerV1:
@@ -97,7 +98,8 @@ class SimpleTokenizerV1:
           - Trả về list[int] theo đúng thứ tự token xuất hiện.
         """
         # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-        raise NotImplementedError("Phần 1.2 chưa được cài đặt")
+        tokens = tokenize_text(text)
+        return [self.str_to_int[token] for token in tokens]
 
     def decode(self, ids: list) -> str:
         """
