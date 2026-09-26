@@ -186,7 +186,10 @@ def bpe_roundtrip_demo(text: str) -> tuple:
     Trả về: tuple (ids, decoded_text)
     """
     # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-    raise NotImplementedError("Phần 3.1 chưa được cài đặt")
+    tokenizer = tiktoken.get_encoding("gpt2")
+    ids = tokenizer.encode(text, allowed_special={"<|endoftext|>"})
+    decoded_text = tokenizer.decode(ids)
+    return (ids, decoded_text)
 
 
 def get_next_token_pairs(token_ids: list, context_size: int) -> list:
@@ -203,7 +206,12 @@ def get_next_token_pairs(token_ids: list, context_size: int) -> list:
     Trả về: list[tuple(list[int], int)]
     """
     # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-    raise NotImplementedError("Phần 4.1 chưa được cài đặt")
+    result = []
+    for i in range(1, context_size + 1):
+        context = token_ids[:i]
+        target = token_ids[i]
+        result.append((context, target))
+    return result
 
 
 # ==============================================================================
@@ -231,17 +239,22 @@ class GPTDatasetV1(Dataset):
         self.target_ids = []
 
         # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-        raise NotImplementedError("Phần 5.1 chưa được cài đặt")
+        token_ids = tokenizer.encode(txt, allowed_special={"<|endoftext|>"})
+        for i in range(0, len(token_ids) - max_length, stride):
+            input_chunk = token_ids[i : i + max_length]
+            target_chunk = token_ids[i + 1 : i + max_length + 1]
+            self.input_ids.append(torch.tensor(input_chunk))
+            self.target_ids.append(torch.tensor(target_chunk))
 
     def __len__(self):
         """TODO (5.2): Trả về số mẫu trong dataset (độ dài self.input_ids)."""
         # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-        raise NotImplementedError("Phần 5.2 chưa được cài đặt")
+        return len(self.input_ids)
 
     def __getitem__(self, idx):
         """TODO (5.3): Trả về tuple (self.input_ids[idx], self.target_ids[idx])."""
         # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-        raise NotImplementedError("Phần 5.3 chưa được cài đặt")
+        return self.input_ids[idx], self.target_ids[idx]
 
 
 def create_dataloader_v1(txt, batch_size=4, max_length=256, stride=128,
@@ -255,7 +268,11 @@ def create_dataloader_v1(txt, batch_size=4, max_length=256, stride=128,
       4. return dataloader
     """
     # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-    raise NotImplementedError("Phần 6.1 chưa được cài đặt")
+    tokenizer = tiktoken.get_encoding("gpt2")
+    dataset = GPTDatasetV1(txt, tokenizer, max_length, stride)
+    dataloader = DataLoader(dataset, batch_size=batch_size,
+                           shuffle=shuffle, drop_last=drop_last, num_workers=num_workers)
+    return dataloader
 
 
 # ==============================================================================
@@ -276,7 +293,10 @@ def demo_token_embedding(vocab_size: int, output_dim: int,
     Trả về: tuple (embedding_layer.weight, embedded)
     """
     # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-    raise NotImplementedError("Phần 7.1 chưa được cài đặt")
+    torch.manual_seed(seed)
+    embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
+    embedded = embedding_layer(input_ids)
+    return embedding_layer.weight, embedded
 
 
 def build_input_embeddings(raw_text: str, vocab_size: int = 50257,
@@ -299,7 +319,16 @@ def build_input_embeddings(raw_text: str, vocab_size: int = 50257,
     Kết quả mong đợi: shape == (batch_size, max_length, output_dim)
     """
     # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-    raise NotImplementedError("Phần 8.1 chưa được cài đặt")
+    tokenizer = tiktoken.get_encoding("gpt2")
+    dataset = GPTDatasetV1(raw_text, tokenizer, max_length=max_length, stride=max_length)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True)
+    inputs, _ = next(iter(dataloader))
+    token_embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
+    token_embeddings = token_embedding_layer(inputs)
+    pos_embedding_layer = torch.nn.Embedding(max_length, output_dim)
+    pos_embeddings = pos_embedding_layer(torch.arange(max_length))
+    input_embeddings = token_embeddings + pos_embeddings
+    return input_embeddings
 
 
 # ==============================================================================
