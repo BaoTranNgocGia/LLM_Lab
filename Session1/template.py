@@ -113,7 +113,10 @@ class SimpleTokenizerV1:
             Gợi ý pattern:  r'\\s+([,.?!"()\\'])'  ->  thay bằng r'\\1'
         """
         # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-        raise NotImplementedError("Phần 1.3 chưa được cài đặt")
+        text = " ".join([self.int_to_str[i] for i in ids])
+        text = re.sub(r'\s+([,.?!"()\'])', r'\1', text)
+        return text
+
 
 
 def build_vocab_with_special_tokens(tokens: list) -> dict:
@@ -126,7 +129,11 @@ def build_vocab_with_special_tokens(tokens: list) -> dict:
     Trả về: dict[str, int], trong đó "<|unk|>" phải có id LỚN NHẤT.
     """
     # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-    raise NotImplementedError("Phần 2.1 chưa được cài đặt")
+    unique_tokens = sorted(set(tokens))
+    vocab = {token: i for i, token in enumerate(unique_tokens)}
+    vocab["<|endoftext|>"] = len(vocab)
+    vocab["<|unk|>"] = len(vocab)
+    return vocab
 
 
 class SimpleTokenizerV2:
@@ -144,14 +151,17 @@ class SimpleTokenizerV2:
         nếu không, thay token đó bằng chuỗi "<|unk|>" trước khi tra id.
         """
         # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-        raise NotImplementedError("Phần 2.2 chưa được cài đặt")
+        tokens = tokenize_text(text)
+        return [self.str_to_int.get(token, self.str_to_int["<|unk|>"]) for token in tokens]
 
     def decode(self, ids: list) -> str:
         """
         TODO (2.3): Cài đặt giống hệt decode() của SimpleTokenizerV1 (1.3).
         """
         # TODO: xoá dòng raise bên dưới và viết code của bạn tại đây
-        raise NotImplementedError("Phần 2.3 chưa được cài đặt")
+        text = " ".join([self.int_to_str[i] for i in ids])
+        text = re.sub(r'\s+([,.?!"()\'])', r'\1', text)
+        return text
 
 
 # ==============================================================================
